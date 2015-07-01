@@ -1,0 +1,99 @@
+<html>
+  <head><title>jV Options</title>
+    <script src="util.js" type="application/x-javascript"></script>
+    <script src="sharedsettings.js" type="application/x-javascript"></script>
+    <script src="settings.js" type="application/x-javascript"></script>
+    <script src="options.js" type="application/x-javascript"></script>
+  </head>
+
+  <body>
+    <form name="options_form">
+      Default initial mode for each textarea<br>
+      <input type="radio" name="jv-settings-default-mode"
+          id="jv-settings-default-mode-normal" checked>Normal<br>
+      <input type="radio" name="jv-settings-default-mode"
+          id="jv-settings-default-mode-insert">Insert<br>
+      <hr>
+      The tab key, in insert mode, should...<br>
+      <input type="radio" name="jv-settings-tab-handling"
+          id="jv-settings-tab-handling-ignore">
+          Move focus out of the textarea, as usual.<br>
+      <input type="radio" name="jv-settings-tab-handling"
+          id="jv-settings-tab-handling-insert" checked>
+          Insert a tab.<br>
+      <hr>
+      Undo Mode<br>
+      <input type="radio" name="jv-settings-undo-mode"
+          id="jv-settings-undo-mode-vim" checked>
+          Vim-style infinite undo/redo<br>
+      <input type="radio" name="jv-settings-undo-mode"
+          id="jv-settings-undo-mode-vi">
+          Vi-style single-action undo<br>
+      <hr>
+      Visual Bell<br>
+      <input type="radio" name="jv-settings-visual-bell"
+          id="jv-settings-visual-bell-inhibit">
+          Do nothing on errors.<br>
+      <input type="radio" name="jv-settings-visual-bell"
+          id="jv-settings-visual-bell-allow" checked>
+          Flash on errors.<br>
+      <hr>
+      Status Bar<br>
+      <input type="radio" name="jv-settings-status-bar"
+          id="jv-settings-status-bar-show" checked>
+          Show the status bar.<br>
+      <input type="radio" name="jv-settings-status-bar"
+          id="jv-settings-status-bar-hide">
+          Hide the status bar.<br>
+      <hr>
+      Style hints<br>
+      <input type="checkbox" name="jv-settings-change-textarea-appearance"
+             id="jv-settings-change-textarea-appearance-on">
+          Change textarea appearance when JV is active.<br>
+      <hr>
+      Debugging Assertion Failures<br>
+      <input type="radio" name="jv-settings-debugging-asserts"
+          id="jv-settings-debugging-asserts-popup">
+          Show via alert<br>
+      <input type="radio" name="jv-settings-debugging-asserts"
+          id="jv-settings-debugging-asserts-ignore" checked>
+          Suppress<br>
+      <hr>
+      <hr>
+      Content Editable DIV support [mainly for GMail]<br>
+      <input type="checkbox" name="jv-settings-divhack-disabled"
+             id="jv-settings-divhack-disabled-on">
+      Disabled.<br>
+      <hr>
+      <!-- TODO(ericu): Make the disable above grey this all out.
+      Understand the justEatEsc logic and make the options clearer. -->
+      <input type="checkbox" name="jv-settings-divhack-just-eat-esc"
+             id="jv-settings-divhack-just-eat-esc-on">
+      Just eat ESC, don't run jV.<br>
+      <hr>
+      <input type="checkbox" name="jv-settings-divhack-debug"
+             id="jv-settings-divhack-debug-on">
+      Enable debug messages in javascript console and dump on click.<br>
+      <hr>
+      <input type="checkbox" name="jv-settings-divhack-disable-status-bar"
+             id="jv-settings-divhack-disable-status-bar-on">
+      Disable status bar for content editable DIVs.<br>
+      <hr>
+      <input type="checkbox" name="jv-settings-change-divhack-appearance"
+             id="jv-settings-change-divhack-appearance-on">
+          Change content editable DIV appearance when JV is active.<br>
+      <hr>
+      <input type="radio" name="jv-settings-divhack-allow-html"
+             id="jv-settings-divhack-allow-html-on" checked>
+      Allow editing above HTML content.<br>
+      <input type="radio" name="jv-settings-divhack-allow-html"
+             id="jv-settings-divhack-allow-html-off">
+      Only eat ESC if HTML content is detected.<br>
+      <hr>
+      Enable jV<br>
+      <input type="checkbox" id="jv-settings-checkbox" checked>
+      <br>
+      <button type=button id="jv-settings-save-button">Save</button>
+    </form>
+  </body>
+</html>

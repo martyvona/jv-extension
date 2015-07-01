@@ -1,0 +1,36 @@
+<html>
+  <head><title>jV enable manager</title>
+    <script src="util.js"></script>
+    <script src="popup.js"></script>
+    <style type="text/css">
+      div.cb_label_pair {
+        clear:both;
+        width:100%;
+        width:14em;
+      }
+      div.cb {
+        float:left;
+        clear:left;
+      }
+      label.label_class {
+        white-space:nowrap;
+        clear:right;
+        text-align:left;
+      }
+    </style>
+  </head>
+  <body>
+    <div class=cb_label_pair>
+      <div class=cb>
+          <input type="checkbox" id="global" class="cheat_global">
+      </div>
+      <label for="global" class=label_class>Enable jV</label>
+    </div>
+    <div class=cb_label_pair>
+      <div class=cb>
+        <input type="checkbox" id="local" class="cheat_local">
+      </div>
+      <label for="local" class=label_class>Enable jV for current tab</label>
+    </div>
+  </body>
+</html>

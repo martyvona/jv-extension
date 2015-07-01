@@ -1,0 +1,27 @@
+{
+   "background": {
+      "page": "background.html"
+   },
+   "content_scripts": [ {
+      "all_frames": true,
+      "js": [ "util.js", "queue.js", "jv.js", "sharedsettings.js", "chrome_specific.js" ],
+      "matches": [ "http://*/*", "https://*/*", "file://*" ]
+   } ],
+   "description": "The jV text editor",
+   "icons": {
+      "128": "icon128.png",
+      "16": "icon16.png",
+      "48": "icon48.png"
+   },
+   "manifest_version": 2,
+   "name": "jV-vona",
+   "options_page": "options.html",
+   "page_action": {
+      "default_icon": "statusbar-active.png",
+      "default_popup": "popup.html",
+      "default_title": "Enabled, as far as I know."
+   },
+   "permissions": [ "tabs", "clipboardRead", "clipboardWrite" ],
+   "update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "0.57"
+}
