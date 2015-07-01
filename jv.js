@@ -5497,6 +5497,24 @@ var jsvim = new JsVim();
       }
     var onSelect =
       function (event) {
+        if (element.selectionStart == element.selectionEnd) {
+
+//This seems to happen now (7/1/15) in chrome 43.0.2357.130 on windows
+//
+//After hitting esc for the first time to get out of insert mode in a textarea
+//(contenteditable divs still seem fine) the effect is very bad - infinite loop
+//of selection changes, preventing jV from functioning further.
+//
+//So just catch empty new selection here when selection already empty and abort.
+//
+//          console.log("onSelect() - empty selection");
+
+          var vsp = jsvim.getVar(VarNames.VISUAL_START_POS, 0);
+          var vep = jsvim.getVar(VarNames.VISUAL_END_POS, 0);
+
+          if (vsp == vep)
+            return;
+        }
         return jsvim.handleSelect(event);
       }
     var onMouseDown =
