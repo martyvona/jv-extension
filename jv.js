@@ -3628,8 +3628,7 @@ var jsvim = new JsVim();
   }
 
   function handleEsc() {
-    if (jsvim.divhackJustEatEsc ||
-        (jsvim.e && jsvim.e.jv_divhack_just_eat_esc)) {
+    if (jsvim.divhackJustEatEsc || (jsvim.e && jsvim.e.jv_just_eat_esc)) {
       return;
     }
     // This is where Escape et al are normally handled, including the end of
@@ -3877,8 +3876,7 @@ var jsvim = new JsVim();
   // an easy way to do that, or is it all piece-by-piece?  [Note; I believe that
   // this is already done for Chrome; will need to revisit it for FF.]
   function handleKeydown(event, handleAnyway) {
-    if (jsvim.divhackJustEatEsc || !jsvim.e ||
-        jsvim.e.jv_divhack_just_eat_esc) {
+    if (jsvim.divhackJustEatEsc || !jsvim.e || jsvim.e.jv_just_eat_esc) {
       return true;
     }
     if (jsvim.e.jv_divhack) {
@@ -3924,7 +3922,7 @@ var jsvim = new JsVim();
   // TODO: does keydown have different fields than keypress, or do we already
   // take care of that?
   function handleKeyCore(event, handleAnyway) {
-    if (jsvim.divhackJustEatEsc || !this.e || this.e.jv_divhack_just_eat_esc) {
+    if (jsvim.divhackJustEatEsc || !this.e || this.e.jv_just_eat_esc) {
       return true;
     }
     if (this.handledElsewise(event, handleAnyway)) {
@@ -4104,8 +4102,7 @@ var jsvim = new JsVim();
 
   // TODO: layerX+layerY are going away in webkit.  Find a replacement.
   function handleMouseDown(event) {
-    if (jsvim.divhackJustEatEsc || !jsvim.e ||
-        jsvim.e.jv_divhack_just_eat_esc) {
+    if (jsvim.divhackJustEatEsc || !jsvim.e || jsvim.e.jv_just_eat_esc) {
       return true;
     }
     mouseDownX = event.layerX;
@@ -4116,8 +4113,7 @@ var jsvim = new JsVim();
   // height--but it will work for most drags.  todo: Experiment with checking
   // the start+end Y coords against a line-quantization of the window.
   function handleMouseUp(event) {
-    if (jsvim.divhackJustEatEsc || !jsvim.e ||
-        jsvim.e.jv_divhack_just_eat_esc) {
+    if (jsvim.divhackJustEatEsc || !jsvim.e || jsvim.e.jv_just_eat_esc) {
       return true;
     }
     var mouseUpX = event.layerX;
@@ -4169,9 +4165,11 @@ var jsvim = new JsVim();
   // Extension only; change to member function living in overlay.js?
   function handleFocusForExtension(event) {
     e = event.originalTarget;
+    this.disallowed = this.isDisallowed(e);
     if (e && e.tagName && e.tagName.toLowerCase() == "textarea" &&
-        !e[VarNames.JV_REMOVAL_FUNCTION] && !this.isDisallowed(e)) {
-      setUpElement(this, e, true);
+        !e[VarNames.JV_REMOVAL_FUNCTION] &&
+        (!this.disallowed || this.disallowedJustEatEsc)) {
+      setUpElement(this, e, this.disallowed);
     }
   }
 
@@ -4221,6 +4219,13 @@ var jsvim = new JsVim();
         // little point in Google Docs, so I'm nuking both rather
         // indiscriminately.
         return true;
+      } else {
+        var patterns = this.disallowedHostPatterns.split(/\s+/);
+        for (var i = 0; i < patterns.length; i++) {
+          var pat = patterns[i].replace(/\./g, '\\.').replace(/\*/g, '.*');
+          if (new RegExp(pat).test(host))
+            return true;
+        }
       }
     }
     return false;
@@ -4233,7 +4238,7 @@ var jsvim = new JsVim();
          e.tagName.toLowerCase() != "div")) {
       return false;
     }
-    if (jsvim.divhackJustEatEsc || e.jv_divhack_just_eat_esc) {
+    if (jsvim.divhackJustEatEsc || e.jv_just_eat_esc) {
       return false;
     }
     return !this.isDisallowed(e);
@@ -4251,7 +4256,7 @@ var jsvim = new JsVim();
          (e.tagName.toLowerCase().indexOf("div") == -1))) {
       return false;
     }
-    if (jsvim.divhackJustEatEsc || e.jv_divhack_just_eat_esc) {
+    if (jsvim.divhackJustEatEsc || e.jv_just_eat_esc) {
       return false;
     }
     if (event.originalTarget && (e != event.originalTarget)) {
@@ -4299,7 +4304,7 @@ var jsvim = new JsVim();
 
     e.jv_divhack = true;
 
-    e.jv_divhack_just_eat_esc = jsvim.divhackJustEatEsc;
+    e.jv_just_eat_esc = jsvim.divhackJustEatEsc;
 
     e.value = ""; 
     e.selectionStart = 0;
@@ -4692,11 +4697,11 @@ var jsvim = new JsVim();
       
       divhackDBG("sanitize error, child "+c+" unexpected!");
 
-      if (!e.jv_divhack_just_eat_esc) {
+      if (!e.jv_just_eat_esc) {
         popup("unxpected HTML in contenteditable div, jv going esc-eat-only!");
       }
 
-      e.jv_divhack_just_eat_esc = true;
+      e.jv_just_eat_esc = true;
     }
 
     e.jv_divhack_ignore_modifications = false;
@@ -4715,7 +4720,7 @@ var jsvim = new JsVim();
       e = e.parentNode;
     }
     
-    if (!e || !e.jv_divhack || e.jv_divhack_just_eat_esc) {
+    if (!e || !e.jv_divhack || e.jv_just_eat_esc) {
       return true;
     }
     
@@ -4744,16 +4749,25 @@ var jsvim = new JsVim();
 
   function divhackCheckElement(e) {
     //divhackDBG("divhackCheckElement("+e+")");
+//    console.log("divhackCheckElement("+e+
+//                (e.getAttribute ?
+//                 (" id="+e.getAttribute("id")+
+//                  " contenteditable="+e.getAttribute("contenteditable")) : "")+
+//                ")");
     if (jsvim.divhackDisabled) {
+//      console.log("divhackCheckElement returning false (divhackDisabled)");
       return false;
     }
     if (!e || !e.tagName || (e.tagName.toLowerCase() != "div")) {
+//      console.log("divhackCheckElement returning false (tagName != div)");
       return false;
     }
     if (!e.getAttribute) {
+//      console.log("divhackCheckElement returning false (no getAttribute)");
       return false;
     }
     if (e.getAttribute("contenteditable")) {
+//      console.log("divhackCheckElement returning true (contenteditable)");
       return true;
     }
     //for some reason when we get here in GMail contenteditable is not yet true
@@ -5325,6 +5339,12 @@ var jsvim = new JsVim();
   p.getElementText = getElementText;
   //p.divhackDecodeEntities = divhackDecodeEntities;
 
+  //If the disallowedJustEatEsc pref is on then we partially activate even when
+  //disallowed just to catch ESC keyboard hits.  This flag lets the code in
+  //chrome_specific.js figure out if we're in this state and adjust the jV icon
+  //accordingly.
+  p.disallowed = false;
+
   // Needed only for non-extension operation:
   p.setUp = setUp;
 
@@ -5459,7 +5479,8 @@ var jsvim = new JsVim();
     return statusBar;
   }
 
-  function setUpElement(jsvim, element) {
+  function setUpElement(jsvim, element, justEatESC) {
+
     jsvim.setTextArea(element);
 
     var onKeydown =
@@ -5509,14 +5530,17 @@ var jsvim = new JsVim();
 
     divhackSetUp(element);
 
+    if (justEatESC)
+      element.jv_just_eat_esc = true;
+
     var statusBar;
    
     if ((!element.jv_divhack || !jsvim.divhackDisableStatusBar) &&
-        (jsvim.showStatusBar == null || jsvim.showStatusBar)) {
+        (jsvim.showStatusBar == null || jsvim.showStatusBar) && !justEatESC) {
       statusBar = jsvim.setUpStatusBar();
     }
 
-    if (element.style &&
+    if (!justEatESC && element.style &&
         ((!element.jv_divhack && jsvim.changeTextareaAppearance) || 
          (element.jv_divhack && jsvim.changeDivhackAppearance))) {
       element.jv_orig_backgroundColor = element.style.backgroundColor;
@@ -5528,7 +5552,9 @@ var jsvim = new JsVim();
 
     var gmailIsAnEscThief =
       function (event) {
-        if ((event.keyCode == Keys.ESC) && (event.target == element)) {
+        if ((event.keyCode == Keys.ESC) &&
+            (justEatESC || (event.target == element))) {
+
           //always eat it
           if (event.preventDefault) {
             event.preventDefault();
@@ -5537,17 +5563,28 @@ var jsvim = new JsVim();
             event.stopPropagation();
           }
 
-          jsvim.setTextArea(element);
-          jsvim.handleEsc(); //and we might not do anything but eat it there
-
+          if (event.target == element) {
+            jsvim.setTextArea(element);
+            jsvim.handleEsc(); //and we might not do anything but eat it there
+          }
+          
           return false;
         } else {
           return true;
         }
       }
 
-    if (element.jv_divhack) {
+    if (element.jv_divhack || justEatESC) {
       document.addEventListener("keydown", gmailIsAnEscThief, true); //capture
+      var iframes = document.getElementsByTagName("iframe");
+      for (var i = iframes.length - 1; i >= 0; --i)
+        try {
+          iframes[i].contentDocument.
+            addEventListener("keydown", gmailIsAnEscThief, true); //capture
+        } catch (ex) { }
+    }
+
+    if (element.jv_divhack) {
       element.addEventListener("DOMCharacterDataModified", onModified, true);
       element.addEventListener("cut", onModifiedDelayed, true);
       element.addEventListener("DOMNodeInsertedIntoDocument", onModified, true);
@@ -5573,8 +5610,16 @@ var jsvim = new JsVim();
           element.removeEventListener("mouseup", onMouseUp, true);
           element.removeEventListener("focus", onFocus, true);
           element.removeEventListener("blur", onBlur, true);
-          if (element.jv_divhack) {
+          if (element.jv_divhack || justEatESC) {
             document.removeEventListener("keydown", gmailIsAnEscThief, true);
+            var iframes = document.getElementsByTagName("iframe");
+            for (var i = iframes.length - 1; i >= 0; --i)
+              try {
+                iframes[i].contentDocument.
+                  removeEventListener("keydown", gmailIsAnEscThief, true);
+              } catch (ex) { }
+          }
+          if (element.jv_divhack) {
             element.removeEventListener("DOMCharacterDataModified",
                                         onModified, true);
             element.removeEventListener("cut", onModifiedDelayed, true);
@@ -5586,8 +5631,8 @@ var jsvim = new JsVim();
             element.selectionEnd = null;
             element.jv_divhack_numchildren = null;
             element.jv_divhack_lastlinelen = null;
-            element.jv_divhack_just_eat_esc = null;
             element.jv_divhack_ignore_modifications = null;
+            element.jv_just_eat_esc = null;
           }
           if (element.jv_orig_backgroundColor) {
             element.style.backgroundColor = element.jv_orig_backgroundColor;
@@ -5606,9 +5651,10 @@ var jsvim = new JsVim();
   function setUpElementIfNeeded(jsvim, element, upNotDown) {
     var fn = element[VarNames.JV_REMOVAL_FUNCTION];
     if (upNotDown && !fn) {
-      if (!jsvim.isDisallowed(element)) {
+      jsvim.disallowed = jsvim.isDisallowed(element);
+      if (!jsvim.disallowed || jsvim.disallowedJustEatEsc) {
         jsvim.onFoundTextArea();
-        setUpElement(jsvim, element);
+        setUpElement(jsvim, element, jsvim.disallowed);
         return true;
       }
     } else if (!upNotDown && fn) {

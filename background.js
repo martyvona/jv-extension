@@ -5,7 +5,9 @@ function musterPrefs() {
   var p = getPrefs();
   var data = {};
   for (var i=0; i < prefs.length; ++i) {
-    data[prefs[i].varName] = p.getBoolPref(prefs[i].prefName);
+    data[prefs[i].varName] =
+      (prefs[i].isBool) ?
+      p.getBoolPref(prefs[i].prefName) : p.getStringPref(prefs[i].prefName);
   }
   data.enabled = getEnabledPref();
   var msg = {
@@ -75,6 +77,10 @@ function updateActionDisplay(enabled, tab) {
     case "locally_disabled":
       icon = 'statusbar-locally-inactive.png';
       text = 'jV is disabled for this tab';
+      break;
+    case "disallowed_just_eat_esc":
+      icon = 'statusbar-locally-inactive.png';
+      text = 'jV is disabled for this tab, but is still eating ESC to avoid inadvertent window closing';
       break;
     default:
       popup("didn't recognize enabled state '" + enabled + "'!");

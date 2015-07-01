@@ -49,7 +49,7 @@
       Style hints<br>
       <input type="checkbox" name="jv-settings-change-textarea-appearance"
              id="jv-settings-change-textarea-appearance-on">
-          Change textarea appearance when JV is active.<br>
+          Change textarea appearance when jV is active.<br>
       <hr>
       Debugging Assertion Failures<br>
       <input type="radio" name="jv-settings-debugging-asserts"
@@ -58,6 +58,13 @@
       <input type="radio" name="jv-settings-debugging-asserts"
           id="jv-settings-debugging-asserts-ignore" checked>
           Suppress<br>
+      <hr>
+      <input type="checkbox" name="jv-settings-disallowed-just-eat-esc"
+             id="jv-settings-disallowed-just-eat-esc-on">
+      Eat ESC on sites where jV is disallowed (avoid accidental window closing).<br>
+      <hr>
+      Disallowed hostnames (use * for glob matching):
+      <input type="text" size="50" id="jv-settings-disallowed-host-patterns"><br>
       <hr>
       <hr>
       Content Editable DIV support [mainly for GMail]<br>
@@ -81,7 +88,7 @@
       <hr>
       <input type="checkbox" name="jv-settings-change-divhack-appearance"
              id="jv-settings-change-divhack-appearance-on">
-          Change content editable DIV appearance when JV is active.<br>
+          Change content editable DIV appearance when jV is active.<br>
       <hr>
       <input type="radio" name="jv-settings-divhack-allow-html"
              id="jv-settings-divhack-allow-html-on" checked>

@@ -69,10 +69,25 @@ function setupBoolPref(pref) {
   }
 }
 
+function setupStringPref(pref) {
+  var value = getPrefs().getStringPref(pref.prefName);
+  var elt = document.getElementById(pref.containerId);
+  if (getPrefs().prefSet(pref.prefName)) { // Else leave the defaults.
+    elt.value = value;
+  } else {
+    getPrefs().setStringPref(pref.prefName, elt.value);
+  }
+}
+
 function saveBoolPref(pref) {
   var elt = document.getElementById(pref.trueId);
   getPrefs().setBoolPref(pref.prefName,
       isChrome() ? elt.checked : elt.selected);
+}
+
+function saveStringPref(pref) {
+  var elt = document.getElementById(pref.containerId);
+  getPrefs().setStringPref(pref.prefName, elt.value);
 }
 
 function saveEnableFlag() {
@@ -94,7 +109,10 @@ function jv_checkSettings() {
   var i;
   try {
     for (i = 0; i < prefs.length; ++i) {
-      setupBoolPref(prefs[i]);
+      if (prefs[i].isBool)
+        setupBoolPref(prefs[i]);
+      else
+        setupStringPref(prefs[i]);
     }
     // set 'enabled' checkbox
     var elt = document.getElementById("jv-settings-checkbox");
@@ -124,7 +142,10 @@ function jv_saveSettings() {
   // Radio buttons first
   var i;
   for (i = 0; i < prefs.length; ++i) {
-    saveBoolPref(prefs[i]);
+    if (prefs[i].isBool)
+      saveBoolPref(prefs[i]);
+    else
+      saveStringPref(prefs[i]);
   }
 
   // Now the global enable flag

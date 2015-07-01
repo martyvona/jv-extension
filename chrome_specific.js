@@ -52,8 +52,12 @@
             handleEnableChange(jsvim[i]);
           }
           jsvim.updatePageAction(
-              jsvim[i] ? (jsvim.lenabled ? "enabled" : "locally_disabled")
-                       : "disabled");
+            jsvim[i] ?
+              (jsvim.disallowed ?
+               (jsvim.disallowedJustEatEsc ?
+                "disallowed_just_eat_esc" : "disabled") :
+               (jsvim.lenabled ? "enabled" : "locally_disabled")) :
+            "disabled");
         } else if (i == "showStatusBar" && jsvim["enabled"] && jsvim.lenabled) {
           if (jsvim[i]) {
             jsvim.setUpStatusBar();
@@ -74,7 +78,7 @@
       case "local":
         var newState = !jsvim.lenabled;
         jsvim.lenabled = newState;
-        if (jsvim.enabled) {
+        if (jsvim.enabled && !jsvim.disallowed) {
           handleEnableChange(newState);
           jsvim.updatePageAction(
               jsvim.lenabled ? "enabled" : "locally_disabled");

@@ -6,6 +6,16 @@ function JvBoolPref(containerId, trueSuffix, falseSuffix, prefName, varName,
   this.prefName = prefName;
   this.varName = varName;
   this.onUpdate = onUpdate;
+  this.isBool = true;
+  return this;
+}
+
+function JvStringPref(containerId, prefName, varName, onUpdate) {
+  this.containerId = "jv-settings-" + containerId;
+  this.prefName = prefName;
+  this.varName = varName;
+  this.onUpdate = onUpdate;
+  this.isBool = false;
   return this;
 }
 
@@ -59,6 +69,12 @@ var prefs = [
       "popupOnAssert",
       null),
   new JvBoolPref(
+    "disallowed-just-eat-esc", "-on", "-off",
+    "disallowed.justeatesc", "disallowedJustEatEsc", null),
+  new JvStringPref(
+    "disallowed-host-patterns",
+    "disallowed.host.patterns", "disallowedHostPatterns", null),
+  new JvBoolPref(
     "divhack-disabled", "-on", "-off",
     "divhack.disabled", "divhackDisabled", null),
   new JvBoolPref(
@@ -93,6 +109,12 @@ function getPrefs() {
         setBoolPref : function(prefName, value) {
           localStorage[prefName] =
               (typeof(value) == "string") ? (value == "true") : value;
+        },
+        getStringPref : function(prefName) {
+          return localStorage[prefName];
+        },
+        setStringPref : function(prefName, value) {
+          localStorage[prefName] = value;
         }
       };
     }
@@ -141,7 +163,10 @@ function updateEditorPrefs() {
   if (this.updateEpoch != this.getVar(this.VarNames.UPDATE_EPOCH)) {
     for (i = 0; i < prefs.length; ++i) {
       var pref = prefs[i];
-      this[prefs[i].varName] = getPrefs().getBoolPref(prefs[i].prefName);
+      this[prefs[i].varName] =
+        (pref.isBool) ?
+        getPrefs().getBoolPref(prefs[i].prefName) :
+        getPrefs().getStringPref(prefs[i].prefName);
       if (prefs[i].onUpdate) {
         prefs[i].onUpdate(this);
       }
