@@ -4223,7 +4223,7 @@ var jsvim = new JsVim();
         var patterns = this.disallowedHostPatterns.split(/\s+/);
         for (var i = 0; i < patterns.length; i++) {
           var pat = patterns[i].replace(/\./g, '\\.').replace(/\*/g, '.*');
-          if (new RegExp(pat).test(host))
+          if (pat != "" && new RegExp(pat).test(host))
             return true;
         }
       }
